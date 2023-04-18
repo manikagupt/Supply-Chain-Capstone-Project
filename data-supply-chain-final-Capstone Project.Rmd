@@ -1,0 +1,1587 @@
+---
+title: "R Notebook"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+```{r}
+library(readr)
+setwd("C:/Users/manik/Desktop/Manika PGDBABI/Final Project/dataset")
+mydata = read.csv("DataCoSupplyChainDatasetfinal.csv")
+View(mydata)
+```
+
+
+```{r}
+dim(mydata)
+```
+
+```{r}
+head(mydata)
+```
+
+```{r}
+tail(mydata)
+```
+
+```{r}
+names(mydata)
+```
+
+```{r}
+str(mydata)
+```
+
+```{r}
+summary(mydata)
+```
+
+```{r}
+install.packages("caTools")
+library(caTools)
+install.packages("cartools")
+library(cartools)
+library(dplyr)
+install.packages("Hmisc")
+library(Hmisc)
+```
+
+```{r}
+describe(mydata)
+
+```
+
+```{r}
+install.packages("plotrix")
+library(plotrix)
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("rpart.plot")
+library(rpart.plot)
+any(is.na.data.frame(mydata))
+na_value=colSums(is.na(mydata))
+na_value=data.frame(na_value)
+print(na_value)
+
+```
+##Order Zip Code and Product Description columns need to be removed as they have almost all the values missing
+##Besides 3 values are missing for the complete address to the missing value zipcode is not available the value of zipcode cannot be imputed
+##Hence we have to remove the rows with mission values w.r.t Customer Zipcode
+
+```{r}
+mydata=data.frame(mydata)
+mydata=mydata[,-c(47,44)]
+##Removing the two columns of missing values
+str(mydata)
+```
+
+```{r}
+mydata=na.omit(mydata)
+any(is.na.data.frame(mydata))
+```
+##All missing values have been attended
+
+```{r}
+mydata1=mydata[,-c(12)]
+##Removing Customer email column as it has no data
+str(mydata1)
+mydata1=mydata1[,-c(15)]
+##Removing column with Customer Password as it doesnt have data
+str(mydata1)
+```
+
+```{r}
+##Univariant analysis
+install.packages("caTools")
+library(caTools)
+install.packages("graphics")
+library(graphics)
+install.packages("car")
+library(car)
+install.packages("caret")
+library(caret)
+hist(mydata$Days.for.shipping..real., col="Green")
+str(mydata1)
+boxplot(mydata1$Days.for.shipping..real., main="Days of shipping")
+```
+
+```{r}
+hist(mydata$Days.for.shipment..scheduled., col="Red")
+boxplot(mydata1$Days.for.shipment..scheduled.,main="Days of shipping scheduled")
+```
+
+```{r}
+hist(mydata$Benefit.per.order, col="Green")
+boxplot(mydata1$Benefit.per.order,main="Benefits per order")
+```
+```{r}
+hist(mydata$Sales.per.customer, col="Green")
+boxplot(mydata1$Sales.per.customer, main="Sals per customer")
+```
+
+```{r}
+hist(mydata$Order.Item.Discount, col="Blue")
+boxplot(mydata1$Order.Item.Discount, main="Discount per order")
+```
+
+```{r}
+hist(mydata$Order.Item.Product.Price, col="Blue")
+boxplot(mydata1$Order.Item.Product.Price, main="Item wise price per order")
+```
+
+```{r}
+hist(mydata$Order.Item.Profit.Ratio, col="Green")
+boxplot(mydata1$Order.Item.Profit.Ratio, main="Profit Ratio")
+```
+
+```{r}
+hist(mydata$Order.Item.Quantity, col="Green")
+boxplot(mydata1$Order.Item.Quantity, main="Quantity per order")
+```
+
+```{r}
+hist(mydata$Sales, col="Green")
+boxplot(mydata1$Sales, main="Sales")
+```
+
+```{r}
+hist(mydata$Order.Item.Total, col="Green")
+boxplot(mydata1$Order.Item.Total, main="total items per order")
+```
+
+```{r}
+hist(mydata$Order.Profit.Per.Order, col="Green")
+boxplot(mydata1$Order.Profit.Per.Order, main="Profit per order")
+```
+
+```{r}
+hist(mydata$Product.Price, col="Green")
+boxplot(mydata1$Product.Price, main="Product Price")
+```
+
+
+```{r}
+##Univariant analysis of categorical variables
+table(mydata$Delivery.Status)
+Delivery_status=prop.table(table(mydata$Delivery.Status))*100
+write.table(Delivery_status,file="Delivery_status.csv",sep = ",", row.names = FALSE)
+Delivery_status
+```
+
+```{r}
+table(mydata$Late_delivery_risk)
+Delivery.Risk_distribution=prop.table(table(mydata$Late_delivery_risk))*100
+write.table(Delivery.Risk_distribution,file="Delivery.Risk.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Category.Name)
+Category.Names_distribution=prop.table(table(mydata$Category.Name))*100
+Category.Names_distribution
+write.table(Category.Names_distribution,file="Category distribution.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Category.Id)
+Category.id_distribution=prop.table(table(mydata$Category.Id))*100
+write.table(Category.id_distribution,file="Category id.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Type)
+Type_distribution=prop.table(table(mydata$Type))*100
+write.table(Type_distribution,file="Type.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Customer.City)
+Customer.City_distribution=prop.table(table(mydata$Customer.City))*100
+write.table(Customer.City_distribution,file="Customer City.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Customer.Country)
+Customer.Country_distribution=prop.table(table(mydata$Customer.Country))*100
+write.table(Customer.Country_distribution,file="Customer.Country.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata1$Customer.Segment)
+Customer.Segment_distribution=prop.table(table(mydata1$Customer.Segment))*100
+write.table(Customer.Segment_distribution,file="Category Segment.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Customer.State)
+Customer.state_distribution=prop.table(table(mydata$Customer.State))*100
+write.table(Customer.state_distribution,file="Customer.state.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Customer.Street)
+Customer.street_distribution=prop.table(table(mydata$Customer.Street))*100
+write.table(Customer.street_distribution,file="Customer Street.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Customer.Zipcode)
+Customer.Zipcode_distribution=prop.table(table(mydata$Customer.Street))*100
+write.table(Customer.Zipcode_distribution,file="Customer Zipcode.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Department.Id)
+Department.id_distribution=prop.table(table(mydata$Department.Id))*100
+write.table(Department.id_distribution,file="Department Id.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Department.Name)
+Department.Name_distribution=prop.table(table(mydata$Department.Name))*100
+write.table(Department.Name_distribution,file="Department Name.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Market)
+Market_distribution=prop.table(table(mydata$Market))*100
+write.table(Market_distribution,file="Market.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Order.City)
+Order.City_distribution=prop.table(table(mydata$Order.City))*100
+write.table(Order.City_distribution,file="Order City.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Order.Country)
+Order.Country_distribution=prop.table(table(mydata$Order.Country))*100
+write.table(Order.Country_distribution,file="Order Country.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Order.Region)
+Order.Region_distribution=prop.table(table(mydata$Order.Region))*100
+write.table(Order.Region_distribution,file="Order.Region.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Order.State)
+Order.State_distribution=prop.table(table(mydata$Order.State))*100
+write.table(Order.State_distribution,file="Order State.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Product.Category.Id)
+Product_category.id_distribution=prop.table(table(mydata$Product.Category.Id))*100
+write.table(Product_category.id_distribution,file="Product.Category.id.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Product.Name)
+Product.name_distribution=prop.table(table(mydata$Product.Name))*100
+write.table(Product.name_distribution,file="Product.name.csv",sep = ",", row.names = FALSE)
+```
+
+```{r}
+table(mydata$Shipping.Mode)
+Shipping.Mode_distribution=prop.table(table(mydata$Shipping.Mode))*100
+write.table(Shipping.Mode_distribution,file="Shipping.Mode.csv", sep=",", row.names=F)
+```
+
+```{r}
+##Excluding the data which are blank and are duplicated or have no benefit for the analysis
+mydata_1=mydata1[,-c(9,12,14,20,44,47)]
+str(mydata_1)
+```
+
+```{r}
+##Converting the chr variables to Factor Variables
+mydata_1$Type=as.factor(mydata_1$Type)
+mydata_1$Delivery.Status=as.factor(mydata_1$Delivery.Status)
+mydata_1$Late_delivery_risk=as.factor(mydata_1$Late_delivery_risk)
+mydata_1$Category.Id=as.factor(mydata_1$Category.Id)
+mydata_1$Customer.City=as.factor(mydata_1$Customer.City)
+mydata_1$Customer.Country=as.factor(mydata_1$Customer.Country)
+mydata_1$Customer.Id=as.factor(mydata_1$Customer.Id)
+```
+
+
+```{r}
+str(mydata_1)
+mydata_1$Customer.Segment=as.factor(mydata_1$Customer.Segment)
+mydata_1$Customer.State=as.factor(mydata_1$Customer.State)
+mydata_1$Customer.Street=as.factor(mydata_1$Customer.Street)
+mydata_1$Customer.Zipcode=as.factor(mydata_1$Customer.Zipcode)
+mydata_1$Department.Id=as.factor(mydata_1$Department.Id)
+mydata_1$Market=as.factor(mydata_1$Market)
+
+```
+
+```{r}
+names(mydata_1)
+```
+
+
+```{r}
+##Bivariant analysis
+##Taking in account of numerical variables only
+mydata_1_factor=mydata_1[,-c(2,3,4,5,17,18,26,27,29,30,31,32,33,34,41)]
+mydata_1_num=mydata_1[,c(2,3,4,5,17,18,26,27,29,30,31,32,33,34,41)]
+names(mydata_1_factor)
+str(mydata_1_factor)
+names(mydata_1_num)
+```
+
+```{r}
+##Bivariant analysis
+install.packages("corrplot")
+library(corrplot)
+install.packages("graphics")
+library(graphics)
+install.packages("DataExplorer")
+library(DataExplorer)
+install.packages("psych")
+library(psych)
+library(ggplot2)
+cor_data=cor(mydata_1_num)
+cor_data
+```
+
+```{r}
+library(ggplot2)
+install.packages("corrplot")
+library(corrplot)
+corrplot(cor_data)
+cor(mydata_1_num,method="spearman")
+```
+
+```{r}
+corrplot(cor_data,method="number")
+```
+
+```{r}
+install.packages("rpart")
+library(rpart)
+install.packages("rpart.plot")
+library(rpart.plot)
+install.packages("DataExplorer")
+library(DataExplorer)
+plot_correlation(mydata_1_num)
+```
+
+##Highly correlated
+
+```{r}
+install.packages("lubridate")
+library(lubridate)
+as.character(mydata_1_factor$shipping.date..DateOrders.)
+as.character(mydata_1_factor$order.date..DateOrders.)
+tm1=mdy_hm(mydata_1_factor$order.date..DateOrders.)
+tm2=mdy_hm(mydata_1_factor$shipping.date..DateOrders.)
+elapsed.time=tm1%--%tm2
+order.lead.time=as.duration(elapsed.time)/ddays(1)
+order.lead.time
+as.data.frame(order.lead.time)
+mydata_1_num=cbind(mydata_1_num,order.lead.time)
+str(mydata_1_num)
+##Finding negative values in order lead time
+dim(mydata_1_num)
+as.numeric(mydata_1_num$order.lead.time)
+colSums(mydata_1_num[,c(1,16)] <0)
+##Treating the only one negative value present in the calculated feature of order lead time
+mydata_1_num$order.lead.time[mydata_1_num$order.lead.time<0]<-5
+round(mydata_1_num$order.lead.time,digits = 0)
+
+```
+
+```{r}
+##Again plotting the correlation plot
+plot_correlation(mydata_1_num)
+```
+
+```{r}
+#3Adding another feature that is of Delivery lead tme
+Delivery.lead.time = mydata_1_num$Days.for.shipment..scheduled.--mydata$Days.for.shipping..real.
+Delivery.lead.time
+summary(Delivery.lead.time)
+```
+```{r}
+as.data.frame(Delivery.lead.time)
+write.csv(mydata_1_factor,"Factor variables.csv",row.names=F)
+write.csv(mydata_1_num,"Numerical variables.csv",row.names=F)
+mydata_1_num=cbind(mydata_1_num,Delivery.lead.time)
+str(mydata_1_num)
+plot_correlation(mydata_1_num)
+##Since we have created a calculated field we can omit the days of shipment real and scheduled
+mydata_1_num=mydata_1_num[,-c(1,2)]
+str(mydata_1_num)
+mydata_1_num=mydata_1_num[,-c(10)] ##Removing duplicate cell, removing sales as we have a ratio of sales per customer
+mydata_1_num=mydata_1_num[,-c(12)] ##Removing Product price, as we have order item product price
+mydata_1_num=mydata_1_num[,-c(11)] ##Removing Order Profit per order as we have Benefit per order
+mydata_1_num=mydata_1_num[,-c(10)] ##Removing Order item total as we have Sales per customer
+plot_correlation(mydata_1_num)
+```
+
+```{r}
+##Introducing another feature of distance from store to delivery destination
+## we need to first find out the lat longitude of the order city then calculate the distance between the available store lat longitude and the destination 
+
+place=as.character(mydata_1_factor$Order.City)
+cities_order=as.data.frame(mydata_1_factor$Order.City)
+install.packages("ggmap")
+library(ggmap)
+register_google(key = "AIzaSyAGLyITPYsvNnsU9B4T7j1yk-FbuSA83H0",write = TRUE) 
+          
+Location_order_city=geocode(place)
+Location_order_city=mutate_geocode(cities_order,place)
+Location_order_city
+```
+
+```{r}
+str(mydata_1_factor)
+mydata_1_factor=mydata_1_factor[,-c(27,24)] ##Removing shipping date and product card id
+mydata_1_factor$Order.City=as.factor(mydata_1_factor$Order.City)
+mydata_1_factor$Order.Country=as.factor(mydata_1_factor$Order.Country)
+mydata_1_factor$Order.Customer.Id=as.factor(mydata_1_factor$Order.Customer.Id)
+mydata_1_factor$Order.Id=as.factor(mydata_1_factor$Order.Id)
+mydata_1_factor$Order.Item.Cardprod.Id=as.factor(mydata_1_factor$Order.Item.Cardprod.Id)
+mydata_1_factor$Order.Item.Id=as.factor(mydata_1_factor$Order.Item.Id)
+mydata_1_factor$Order.Region=as.factor(mydata_1_factor$Order.Region)
+mydata_1_factor$Order.State=as.factor(mydata_1_factor$Order.State)
+mydata_1_factor$Order.Status=as.factor(mydata$Order.Status)
+mydata_1_factor$Product.Category.Id=as.factor(mydata_1_factor$Product.Category.Id)
+mydata_1_factor$Product.Name=as.factor(mydata_1_factor$Product.Name)
+mydata_1_factor$Shipping.Mode=as.factor(mydata_1_factor$Shipping.Mode)
+```
+
+
+```{r}
+##Removing duplicate variable
+mydata_1_factor=mydata_1_factor[,-c(24,16,19)]
+str(mydata_1_factor)
+str(mydata_1_num)
+install.packages("corrplot")
+library(corrplot)
+install.packages("ggplot2")
+library(ggplot2)
+cor_data=cor(mydata_1_num)
+cor_data
+KMO(cor_data)
+```
+##The Kaiser-Meyer-Olkin Measure of Sampling Adequacy is a statistic test that indicates the proportion of variance in the independent variables that might be caused by underlying factors. High values (close to 1.0) generally indicate that a factor analysis may
+```{r}
+cortest.bartlett(cor_data,100)
+```
+##Hence, weknow that If p value less than 0.05 then it is ideal case of dimensional reduction, so we will now proceed to dimensional reduction of the dataset, i.e. Factor Analysis.
+
+
+```{r}
+mydata_clustering=cbind(mydata_1_num,mydata_1_factor)
+str(mydata_clustering)
+##The dist function computes the distance between row vectors of a given matrix.  Several distance functions can be used.
+distMatrix=dist(x=mydata_clustering[,1:11],method = "euclidean")
+#distMatrix = dist(x=custSpendData[,3:7], method = "minkowski", p=2)   #equivalent to above line
+print(distMatrix, digits = 3)
+```
+```{r}
+##Since it there is no reason to over-weight one column than another, we scale all the columns to mean zero and unit standard deviation.
+## scale function standardizes the values
+mydata_clustering.scaled=scale(mydata_clustering[,1:11])
+print(mydata_clustering.scaled)
+```
+##Checking the scxaling
+
+```{r}
+apply(mydata_clustering.scaled,2,mean)
+apply(mydata_clustering.scaled,2,sd)
+```
+
+and the scaled distance matrix
+```{r}
+# Compute distance matrix again with scaled data
+distMatrix.Scaled = dist(x=mydata_clustering.scaled, method = "euclidean") 
+print(distMatrix.Scaled, digits = 3)
+```
+
+Kmeans Clustering
+```{r}
+seed=1000
+set.seed(seed) #since kmeans uses a randomized starting point for cluster centroids
+
+clust2 = kmeans(x=mydata_clustering.scaled, centers = 2, nstart = 5)
+print(clust2)
+```
+
+```{r}
+library(cluster)
+clusplot(mydata_clustering.scaled, clust2$cluster, 
+         color=TRUE, shade=TRUE, labels=2, lines=1)
+```
+
+Now to the question of optimal numbner of clusters. Lets try K=2 to 5 and for each plot the "sum of Within cluster sum of squares".
+
+```{r}
+totWss=rep(0,6)
+for(k in 1:6){
+  set.seed(seed)
+  clust=kmeans(x=mydata_clustering.scaled, centers=k, nstart=5)
+  totWss[k]=clust$tot.withinss
+}
+plot(c(1:6), totWss, type="b", xlab="Number of Clusters",
+       ylab="sum of 'Within groups sum of squares'")  
+
+```
+
+```{r}
+##Looks like K=5 might be a good choice (elbow argument). "NbClust" is another package that the best clustering scheme using a number of experiments on the given data. Make sure you have the package installed.
+##Suggesting strongly that K=5 would be the best choice:
+set.seed(seed) #since kmeans uses a randomized starting point for cluster centroids
+
+clust3 = kmeans(x=mydata_clustering.scaled, centers = 5, nstart = 10)
+print(clust3)
+```
+
+```{r}
+clusplot(mydata_clustering.scaled, clust3$cluster, color=TRUE, shade=TRUE, labels=5, lines=5)
+```
+
+```{r}
+##Adding the cluster numbers back to the dataset
+mydata_clustering$clusters=clust3$cluster
+
+print(mydata_clustering)
+```
+
+And aggregating the rows based on the clusters
+```{r}
+## Aggregate columns 3:7 for each cluster by their means
+cluster
+mydata_custprofile=aggregate(mydata_clustering[,-c(12:35)], list(mydata_clustering$clusters),FUN = "mean")
+print(mydata_custprofile)
+
+write.csv(mydata_custprofile,"ClusterProfile.csv", row.names=F)
+write.csv(mydata_clustering,"Cluster based analysis.csv", row.names=F)
+
+```
+
+```{r}
+##Now going for PCA and RCA since there are number of variables
+summary(mydata_1_num)
+##Right skewed variables need to be taken log for normalisation
+##Left skewed ones can be square rooted for normalisation
+##Normalisation
+##Benefit per order is left skewed so the best method would be sqrrt
+mydata_normalised=mydata_1_num
+mydata_normalised$Benefit.per.order=sign(mydata_1_num$Benefit.per.order)*abs(mydata_1_num$Benefit.per.order)^(1/3)
+summary(mydata_normalised$Benefit.per.order)
+plot_histogram(mydata_normalised$Benefit.per.order)
+hist(mydata_normalised$Benefit.per.order)
+```
+```{r}
+##Now normalising the other variable
+str(mydata_normalised)
+mydata_normalised$Sales.per.customer=sign(mydata_normalised$Sales.per.customer)*abs(mydata_normalised$Sales.per.customer)^(1/3)
+hist(mydata_normalised$Sales.per.customer)
+```
+
+```{r}
+##Normalising Order item discount
+mydata_normalised$Order.Item.Discount=sign(mydata_normalised$Order.Item.Discount)*abs(mydata_normalised$Order.Item.Discount)^(1/3)
+hist(mydata_normalised$Order.Item.Discount)
+```
+
+```{r}
+##Now checking the order item discount rate
+hist(mydata_normalised$Order.Item.Discount.Rate)
+##This doesn't require normalisation
+##Now normalising Order Item Product Price
+mydata_normalised$Order.Item.Product.Price=sign(mydata_normalised$Order.Item.Product.Price)*abs(mydata_normalised$Order.Item.Product.Price)^(1/3)
+hist(mydata_normalised$Order.Item.Product.Price)
+```
+
+```{r}
+##Normalising Order Item Profit Ratio
+
+mydata_normalised$Order.Item.Profit.Ratio=sign(mydata_normalised$Order.Item.Profit.Ratio)*abs(mydata_normalised$Order.Item.Profit.Ratio)^(1/3)
+hist(mydata_normalised$Order.Item.Profit.Ratio)
+
+```
+
+
+
+```{r}
+hist(mydata_normalised$Order.Item.Quantity)
+##Its an ordinal categorical variable
+hist(mydata_normalised$order.lead.time)
+hist(mydata_normalised$Delivery.lead.time)
+summary(mydata_normalised)
+
+##Since Benefit per order is highly correlated to order item profit ratio so we need to remove the order item profit ratio and keep the variable Benefit per order
+install.packages("car")
+library(car)
+scatterplot(mydata_1_num$Benefit.per.order~mydata_1_num$Delivery.lead.time, data=mydata_1_num)
+scatterplot(mydata_1_num$Benefit.per.order~mydata_1_num$order.lead.time,data=mydata_1_num)
+plot(mydata_1_num$Benefit.per.order,mydata_1_num$Delivery.lead.time, main = "Benefit vs. delivery lead time",
+     xlab = "Benefit", ylab = "Delivery lead time", pch = 19, frame = FALSE)
+abline(lm(mydata_1_num$Delivery.lead.time ~ mydata_1_num$Benefit.per.order, data = mydata_1_num), col = "blue")
+mydata_normalised=mydata_normalised[,-c(8,9)]
+```
+
+```{r}
+str(mydata_normalised)
+str(mydata_1_factor)
+mydata_1_factor=mydata_1_factor[,-c(16)]
+str(mydata_1_factor)
+```
+
+
+```{r}
+##When you use PCA, it also assigns some weights to all of the hundred variables you have (depending on their influence). So, all you need to do is to save those weights (like a vector) and multiply with any new instance and it should be transformed and then you can run your model on this transformed set of variables.
+install.packages("nFactors")
+library(psy)
+ev=eigen(cor(mydata_normalised))
+ev
+```
+
+```{r}
+Eigen.Value=ev$values
+Eigen.Value
+```
+
+```{r}
+factor=c(1,2,3,4,5,6,7,8,9)
+Eigen.Value
+Scree=as.data.frame(factor,Eigen.Value[-c(1),])
+plot(Eigen.Value~factor,main="Scree plot", col="Blue",ylim=c(0,4))
+
+```
+
+##4 factors choosen based on scree plot
+
+```{r}
+install.packages("psych")
+library(psych)
+unrotate=principal(mydata_normalised, nfactors=5,rotate = "none")
+print(unrotate,digits = 3)
+write.csv(unrotate$loadings,"unrotated.loadings.csv", row.names=F)
+```
+
+```{r}
+unrotated.profile=plot(unrotate,row.names(unrotate$loadings))
+```
+```{r}
+install.packages("GPArotation")
+library(GPArotation)
+rotate=principal(mydata_normalised,nfactors = 5,rotate = "Varimax")
+print(rotate,digits = 4)
+```
+```{r}
+fa.diagram(rotate)
+```
+
+
+```{r}
+rotated.profile=plot(rotate,row.names(rotate$loadings),cex=1.0)
+
+```
+
+```{r}
+rotated.scores=rotate$scores
+write.csv(rotated.scores,"rotated.scores.csv",row.names=F)
+```
+
+```{r}
+rotate$chi
+```
+
+```{r}
+##applying RCA on CAtegorical variables
+install.packages("FactoMineR")
+library(FactoMineR)
+##Plotting the categorical variable
+str(mydata_1_factor)
+mydata_MCA=mydata_1_factor[,-c(3)]
+str(mydata_MCA)
+for (i in 1:21) {
+  plot(mydata_MCA[,i], main=colnames(mydata_MCA)[i],
+       ylab = "Count", col="steelblue")
+  }
+
+res.mca= MCA()
+```
+##The graphs above can be used to identify variable categories with a very low frequency. These types of variables can distort the analysis and should be removed.
+
+```{r}
+str(mydata_MCA)
+mydata_MCA=mydata_MCA[,-c(4,10,15)] ##Removed Customer City,Customer Zip code and the Order id
+str(mydata_MCA)
+```
+
+
+```{r}
+Type_distribution1=table(mydata_1_factor$Type,mydata_1_factor$Late_delivery_risk)
+write.csv(Type_distribution1,"Type_dist.csv",row.names=T)
+```
+
+```{r}
+Customer.city_distribution=table(mydata_1_factor$Customer.City,mydata_1_factor$Late_delivery_risk)
+write.csv(Customer.city_distribution,"Customer city distribution.csv", row.names=T)
+```
+
+```{r}
+Customer.country_distribution=table(mydata_1_factor$Customer.Country,mydata_1_factor$Late_delivery_risk)
+write.csv(Customer.country_distribution,"Customer.Country.csv",row.names=T)
+```
+
+```{r}
+Category.id_distribution=table(mydata_1_factor$Category.Id,mydata_1_factor$Late_delivery_risk)
+write.csv(Category.id_distribution,"Category.id_distribution.csv",row.names=T)
+```
+
+```{r}
+Customer.segment_distribution=table(mydata_1_factor$Customer.Segment,mydata_1_factor$Late_delivery_risk)
+write.csv(Customer.segment_distribution,"Customer.segment.csv",row.names=T)
+```
+
+```{r}
+Customer.state_distribution=table(mydata_1_factor$Customer.State,mydata_1_factor$Late_delivery_risk)
+write.csv(Customer.state_distribution,"Customer.state_distribution.csv",row.names=T)
+```
+
+```{r}
+Department.id_distribution=table(mydata_1_factor$Department.Id,mydata_1_factor$Late_delivery_risk)
+write.csv(Department.id_distribution,"Department.id.csv",row.names=T)
+```
+
+```{r}
+Market_distribution=table(mydata_1_factor$Market,mydata_1_factor$Late_delivery_risk)
+Market_distribution
+write.csv(Market_distribution,"Marketdistribution.csv",row.names=T)
+```
+
+```{r}
+Order.city_distribution=table(mydata_1_factor$Order.City,mydata_1_factor$Late_delivery_risk)
+write.csv(Order.city_distribution,"Order.city_distribution.csv",row.names=T)
+```
+
+```{r}
+Order.Country_distribution=table(mydata_1_factor$Order.Country,mydata_1_factor$Late_delivery_risk)
+write.csv(Order.Country_distribution,"Order.Country.csv",row.names=T)
+```
+
+```{r}
+Order.state_distribution=table(mydata_1_factor$Order.State,mydata_1_factor$Late_delivery_risk)
+write.csv(Order.state_distribution,"Order.state.csv",row.names=T)
+```
+
+```{r}
+Order.status_distribution=table(mydata_1_factor$Order.Status,mydata_1_factor$Late_delivery_risk)
+write.csv(Order.status_distribution,"Order.status.csv",row.names=T)
+```
+
+```{r}
+Shipping.Mode_distribution=table(mydata_1_factor$Shipping.Mode,mydata_1_factor$Late_delivery_risk)
+write.csv(Shipping.Mode_distribution,"Shipping.mode.csv",row.names=T)
+```
+
+```{r}
+Product.name_distribution=table(mydata_1_factor$Product.Name,mydata_1_factor$Late_delivery_risk)
+write.csv(Product.name_distribution,"Product.name.csv",row.names=T)
+```
+
+```{r}
+mydata_MCA=mydata_MCA[,-c(5,8,11,13,15,17)]
+str(mydata_MCA)
+res.mca = MCA(mydata_MCA, graph = FALSE)
+res.mca
+res.mca=MCA(mydata_MCA, ncp = 5, graph = TRUE)
+
+```
+
+```{r}
+head(res.mca$var$coord)
+MCA.results1=res.mca1$ind$coord
+MCA.results1
+MCA.results=res.mca$ind$coord
+write.csv(MCA.results,"mca scores.csv",row.names=T)
+write.csv(MCA.results,"mca scores row.csv",row.names=F)
+res.mca
+```
+
+```{r}
+install.packages("factoextra")
+library(factoextra)
+get_eigenvalue(res.mca)## Extract the eigenvalues/variances retained by each dimension (axis)
+fviz_eig(res.mca)## Visualize the eigenvalues/variances
+get_mca_ind(res.mca) 
+get_mca_var(res.mca)## Extract the results for individuals and variables, respectively.
+fviz_mca_ind(res.mca)
+fviz_mca_var(res.mca)## Visualize the results for individuals and variables, respectively.
+fviz_mca_biplot(res.mca) ##Make a biplot of rows and columns.
+```
+```{r}
+fviz_screeplot(res.mca, addlabels = TRUE, ylim = c(0, 2))
+```
+```{r}
+fviz_mca_biplot(res.mca, 
+               repel = TRUE, # Avoid text overlapping (slow if many point)
+               ggtheme = theme_minimal())
+Weightage.category=res.mca$var$cos2
+Weightage.category
+write.csv(Weightage.category,"weighted scores for variables.csv",row.names=T)
+##used to draw the biplot of individuals and variable categories
+```
+
+```{r}
+Category.contrib=round(res.mca$var$contrib,4)
+category.contribution1=round(res.mca1$var$contrib,4)
+category.contribution1
+Category.contrib
+write.csv(Category.contrib,"category.contrib.csv",row.names=T)
+```
+
+```{r}
+# Contributions of rows to dimension 1
+fviz_contrib(res.mca, choice = "var", axes = 1, top = 15)
+# Contributions of rows to dimension 2
+fviz_contrib(res.mca, choice = "var", axes = 2, top = 20)
+# Contributions of rows to dimension 3
+fviz_contrib(res.mca, choice = "var", axes = 3, top = 20)
+# Contributions of rows to dimension 4
+fviz_contrib(res.mca, choice = "var", axes = 4, top = 20)
+# Contributions of rows to dimension 5
+fviz_contrib(res.mca, choice = "var", axes = 5, top = 30)
+
+```
+
+```{r}
+category.variable.allocation=res.mca$var$eta2
+print(category.variable.allocattion)
+Category.variable.distribution1=res.mca1$var$eta2
+round(Category.variable.distribution1,4)
+round(category.variable.allocation,digits=2)
+write.csv(category.variable.allocation,"Categorical variable dimensional reduction.csv", row.names=T)
+##now combining the scores for analysis
+as.data.frame(MCA.results)
+as.data.frame(rotated.scores)
+rotated.scores
+mydata_1_factor$Late_delivery_risk
+Late.Delivery=as.data.frame(mydata_1_factor$Late_delivery_risk)
+print(MCA.results)
+mydata_glm=cbind(Late.Delivery,MCA.results)
+mydata_glm=cbind(mydata_glm,rotated.scores)
+mydata_glm
+write.csv(mydata_glm,"Data for logistic regression.csv", row.names=T)
+dim(mydata_glm)
+
+```
+
+```{r}
+set.seed(1000)
+mydata_logit=mydata_glm
+
+dim(mydata_glm)
+colnames(mydata_glm)=c("Late.Delivery","Product.Category","Destination.location","D3","Market","Status","Lead.time","Sales.data","Discount","Location.destination","Benefits")
+names(mydata_glm)
+library(caTools)
+split =sample.split(mydata_logit$Late.Delivery, SplitRatio = 0.75)
+#we are splitting the data such that we have 75% of the data is Train Data and 25% of the data is my Test Data
+
+
+mydata_logit_train = subset(mydata_logit, split == TRUE)
+mydata_logit_test <- subset(mydata_logit, split == FALSE)
+
+#we can check the ratios of the minority class to majority class
+table(mydata_logit_train$Late.Delivery)
+#even here we find that the ratio of not default and default is the same as our population data set
+
+table(mydata_logit_test$Late.Delivery)#even here we find that the ratio of not default and default is the same as our population data set when we round off to the fifth decimal place
+#here we have a very small positive minority class
+mydata_logistic = glm(mydata_logit_train$Late.Delivery~., data=mydata_logit_train, family=binomial(link="logit"))
+
+summary(mydata_logistic)
+#we are comapring the predicted values and given values. Anything above 0.5 will be a yes from the above code
+```
+
+```{r}
+mydata_logistic.cmtable=table(mydata_logit_test$Late.Delivery,mydata_logit_test$log.pred>0.5)
+install.packages("MASS")
+library(MASS)
+install.packages("e1071")
+library(e1071)
+mydata_logistic.cmtable
+mydata_logistic.cm=confusionMatrix(table(mydata_logit_test$Late.Delivery,mydata_logit_test$log.pred>0.5))
+confusionMatrix(mydata_logistic.cmtable)
+```
+```{r}
+install.packages("lmtest")
+library(lmtest)
+
+lrtest(mydata_logistic)
+```
+```{r}
+install.packages("pscl")
+library(pscl)
+summary(mydata_logistic)
+pR2(mydata_logistic)
+```
+###McFadden: 0.10 = OK, 0.10-0.30 = Good, 0.30-0.50 = Very Good, >0.50 = Excellent
+
+##Mc Fadden = 0.8640, 86.4 percent of the uncertainity of the intercept only model 2 can be explained by model 1
+
+
+```{r}
+odds=exp(coef(mydata_logistic))
+odds
+Probability=odds/(1+odds)
+Probability
+```
+
+```{r}
+#Step5: Confusion matrix for measuring predictive accuracy
+pred=predict(mydata_logistic,type="response")
+gg1=floor(pred + 0.50)
+mydata_logistic.cmtrain=table(Actual=mydata_logit_train$Late.Delivery,Prediction=gg1)
+
+```
+
+```{r}
+#Step6: ROC Plot and Interpretation
+# library(Deducer)
+# rocplot(Model1)
+install.packages("ROCR")
+library(ROCR)
+
+pred1=prediction(gg1, mydata_logit_train$Late.Delivery)
+perf1=performance(pred1,"tpr","fpr")
+plot(perf1, col = "Blue", main = "ROC Plot")
+abline(0, 1, lty =8, col = "red")
+auc = performance(pred1, "auc")
+auc = auc@y.values
+auc
+```
+
+```{r}
+#Prediction with Test Data
+Prediction = predict(mydata_logistic, mydata_logit_test,  type="response")
+gg2 = floor(Prediction + 0.5)
+gg2
+mydata_logistic.cmtest=table(Actual=mydata_logit_test$Late.Delivery, Prediction=gg2)
+```
+
+```{r}
+install.packages("Deducer")
+library(Deducer)
+summary(mydata_logistic$coefficients)
+rocChart(mydata_logistic)
+```
+
+```{r}
+mydata_logistic_coeff=exp(mydata_logistic$coefficients)
+mydata_logistic_coeff
+write.csv(mydata_logistic_coeff,file = "Coeffs.logistic.csv")
+library(caret)
+library(lattice)
+varImp_logistic=varImp(object=mydata_logistic)
+data.matrix(varImp_logistic)
+```
+##Lead time and sales data are having high correlation it seems so again trying to build model excluding one of these
+
+```{r}
+mydata_logistic.cm=confusionMatrix(mydata_logistic.cmtest)
+mydata_logistic.cm
+```
+```{r}
+mydata_logistic.cm1=confusionMatrix(mydata_logistic.cmtrain)
+mydata_logistic.cm1
+```
+
+```{r}
+pred = predict(mydata_logistic, data=mydata_logit_train, type="response")
+y_pred_num = ifelse(pred>0.5,1,0)
+y_pred = factor(y_pred_num, levels=c(0,1))
+y_actual = mydata_logit_train$Late.Delivery
+confusionMatrix(y_pred,y_actual,positive="1")
+
+train.roc <- prediction(pred, mydata_logit_train$Late.Delivery)
+ks.train <- performance(train.roc, "tpr", "fpr")
+train.ks <- max(attr(ks.train, "y.values")[[1]] - (attr(ks.train, "x.values")[[1]]))
+train.ks
+```
+
+```{r}
+plot(performance(train.roc, "tpr", "fpr"), 
+     col = "red", main = "ROC Curve for train data")
+abline(0, 1, lty = 8, col = "blue")
+```
+
+```{r}
+# AUC
+train.auc = performance(train.roc, "auc")
+train.area = as.numeric(slot(train.auc, "y.values"))
+train.area
+```
+
+```{r}
+# KS
+ks.train <- performance(train.roc, "tpr", "fpr")
+train.ks <- max(attr(ks.train, "y.values")[[1]] - (attr(ks.train, "x.values")[[1]]))
+train.ks
+```
+
+```{r}
+# Gini
+train.gini = (2 * train.area) - 1
+train.gini
+```
+
+```{r}
+# Calibrating thresold levels to increase sensitivity
+pred = predict(mydata_logistic, data=mydata_logit_train, type="response")
+y_pred_num = ifelse(pred>0.35,1,0)
+y_pred = factor(y_pred_num, levels=c(0,1))
+y_actual = mydata_logit_train$Late.Delivery
+confusionMatrix(y_pred,y_actual,positive="1")
+```
+
+```{r}
+# Performance metrics (out-of-the-sample)
+predtest = predict(mydata_logistic, newdata=mydata_logit_test, type="response")
+y_testpred_num = ifelse(predtest>0.35,1,0)
+y_predtest = factor(y_testpred_num, levels=c(0,1))
+y_actualtest = mydata_logit_test$Late.Delivery
+confusionMatrix(y_predtest,y_actualtest,positive="1")
+```
+
+```{r}
+### Model Building - KNN
+##since we are using scores generated from PCA and MCA so normalisation step is not requires
+##Since 
+
+#knn compare
+library(class)
+str(mydata_logit_train)
+summary(mydata_logit_train)
+knn_fit<- knn(train = mydata_logit_train[,-1], test = mydata_logit_test[,-1], cl= mydata_logit_train[,1],k = 5,prob=TRUE)
+
+#here were have predicted the  minority class all wrong. But we still do have a high probability of being correct.
+#Is it a good model though?
+
+knn_fit.table=table(mydata_logit_test[,1],knn_fit)
+knn_fit.cm=confusionMatrix(mydata_logit_test[,1],knn_fit)
+knn_fit.cm
+
+#KNN in this case is a good algorithm to use in this case
+
+```
+
+
+```{r}
+knn_prob=attributes(knn_fit)$prob
+library(pROC)
+knn.roc=roc(mydata_logit_test$Late.Delivery,knn_prob)
+```
+
+```{r}
+plot(roc(mydata_logit_test$Late.Delivery,knn_prob),print.thres=T,print.auc=T)
+```
+
+```{r}
+##ks
+tstnum <- as.vector(mydata_logit_test$Late.Delivery, mode = "numeric")
+pred_knn <- prediction(knn_prob, tstnum)
+perf_knn <- performance(pred_knn, "tpr", "fpr")
+plot(perf_knn, avg= "threshold", colorize=TRUE, lwd=3, main="ROC curve for Knn=5")
+knn.roc
+ks.train <- performance(knn.roc, "tpr", "fpr")
+train.ks <- max(attr(perf_knn, "y.values")[[1]] - (attr(perf_knn, "x.values")[[1]]))
+train.ks
+
+```
+
+```{r}
+knn.auc = performance(pred_knn, "auc")
+knn.train.area = as.numeric(slot(knn.auc, "y.values"))
+knn.train.area
+```
+
+```{r}
+knn.train.gini = (2 * knn.train.area) - 1
+knn.train.gini
+```
+
+```{r}
+library(e1071)
+mydata_nb<-naiveBayes(x=mydata_logit_train[,2:11], y=as.factor(mydata_logit_train[,1]))
+#do make sure that your dependent variable is a factor
+plot(mydata_logit_train$Late.Delivery, predict(mydata_nb,type = "raw",newdata = mydata_logit_train)[,2])
+
+pred_nb<-predict(mydata_nb,newdata = mydata_logit_train[,2:11])
+str(pred_nb)
+pred_nb.table=table(mydata_logit_test$Late.Delivery,pred_nb)
+  table(mydata_logit_test[,1],pred_nb)
+```
+
+```{r}
+tab.NB = table(mydata_logit_train$Late.Delivery, pred_nb)
+tab.NB
+sum(diag(tab.NB)/sum(tab.NB))
+```
+```{r}
+mydata_nb.cm=confusionMatrix(tab.NB)
+mydata_nb.cm
+tstnum <- as.vector(mydata_logit_test$Late.Delivery, mode = "numeric")
+predNB <- prediction(pred_nb, mydata_logit_train$Late.Delivery)
+perf_knn <- performance(pred_nb, "tpr", "fpr")
+plot(perf_knn, avg= "threshold", colorize=TRUE, lwd=3, main="ROC curve for Knn=5")
+knn.roc
+ks.train <- performance(knn.roc, "tpr", "fpr")
+train.ks <- max(attr(perf_knn, "y.values")[[1]] - (attr(perf_knn, "x.values")[[1]]))
+train.ks
+
+pred_nb
+
+```
+
+```{r}
+str(mydata_dt_train)
+##Removed variables for CART modelling:
+##Delivery status
+##Customer city
+##Customer id
+##Customer street
+##customer zipcode
+##order id
+##order item id
+```
+
+
+##Decision tree
+```{r}
+##setting the control parameters
+r.ctrl=rpart.control(minisplit=100, minbucket = 30, cp=0, xval=10)
+##Building the cART model
+str(mydata_dt_train)
+mydata_CART_train=mydata_dt_train[,-c(2,5,7,10,11,16,17)]
+mydata_CART_test=mydata_dt_test[,-c(2,5,7,10,11,16,17)]
+mydata_CART1=rpart(formula =mydata_CART_train$Late_delivery_risk~.,data = mydata_CART_train,method ="class",minbucket=50,cp=0)
+mydata_CART1
+rpart.plot(mydata_CART1)
+
+```
+```{r}
+plotcp(mydata_CART1)
+```
+
+```{r}
+printcp(mydata_CART1)
+```
+
+```{r}
+##now we need to prune the tree based on the cp plot. cp is in decreasing order. we need to take the cp value with lowest x error.
+ptree=prune(mydata_CART1,cp=0.015,"CP")
+```
+
+```{r}
+printcp(ptree)
+rpart.plot(ptree)
+```
+
+```{r}
+##Visualise the CART tree
+boxcols=c("orange","palegreen3")[ptree$frame$yval]
+par(xpd=T)
+prp(ptree,faclen=0,cex=0.6,extra=1,box.col = boxcols,nn=T,uniform = T)
+```
+
+```{r}
+Variable importance 
+ptree$variable.importance
+```
+
+```{r}
+df_CART=data.frame(ptree$variable.importance)
+write.csv(df_CART, "VAR_IMP_CART.csv")
+```
+
+```{r}
+##use this tree to do the prediction on train as well as test datasets::ability.cov
+mydata_CART_train$CART.pred=predict(ptree,data=mydata_CART_train,type="class")
+view(mydata_CART_train)
+```
+
+```{r}
+mydata_CART_train$CART.score=predict(ptree,data=mydata_CART_train,type="prob")[,"1"]
+print(mydata_CART_train)
+```
+
+```{r}
+mydata_CART_test$CART.pred=predict(ptree,mydata_CART_test, type="class")
+mydata_CART_test$CART.Score=predict(ptree, mydata_CART_test,type="prob")[,"1"]
+write.csv(mydata_CART_test,"CART.test.csv")
+write.csv(mydata_CART_train,"CART.train.csv")
+mydata_CART_test
+```
+
+```{r}
+##CART model Confusion matrix
+CART_CM_train=table(mydata_CART_train$Late_delivery_risk,mydata_CART_train$CART.pred)
+confusionMatrix(CART_CM_train)
+```
+
+```{r}
+CART_CM_test=table(mydata_CART_test$Late_delivery_risk,mydata_CART_test$CART.pred)
+confusionMatrix(CART_CM_test)
+```
+```{r}
+str(mydata_CART_train)
+##Next lets calculate the decile thresholds and use those thresholds to compute various columns in a rank order table:
+probs=seq(0,1,length=11)
+qs=quantile(mydata_CART_train$CART.score, probs)
+mydata_CART_train$deciles=cut(mydata_CART_train$CART.score, unique(qs),include.lowest = TRUE,right=FALSE)
+table(mydata_CART_train$deciles)
+
+library(data.table)
+trainDT = data.table(mydata_CART_train) rankTbl = mydata_CART_train [, list(cnt = length(mydata_CART_train$Late_delivery_risk), 
+  cnt_tar1 = sum(mydata_CART_train$Late_delivery_risk), 
+  cnt_tar0 = sum(mydata_CART_train$Late_delivery_risk == 0)),by=deciles][order(-deciles)]
+
+rankTbl$rrate = round(rankTbl$cnt_tar1 / rankTbl$cnt,4)*100;
+rankTbl$cum_resp = cumsum(rankTbl$cnt_tar1)
+rankTbl$cum_non_resp = cumsuankTbl$cnt_tar0)
+rankTbl$cum_rel_resp = round(rankTbl$cum_resp / sum(rankTbl$cnt_tar1),4)*100;
+rankTbl$cum_rel_non_resp = round(rankTbl$cum_non_resp / sum(rankTbl$cnt_tar0),4)*100;
+rankTbl$ks = abs(rankTbl$cum_rel_resp - rankTbl$cum_rel_non_resp);
+
+print(rankTbl)
+
+```
+
+
+We will next use the ROCR and ineq packages to compute AUC, KS and gini
+```{r}
+library(ROCR)
+library(ineq)
+predObj = prediction(trainDS$prob1, trainDS$Target)
+perf = performance(predObj, "tpr", "fpr")
+plot(perf)
+KS = max(perf@y.values[[1]]-perf@x.values[[1]])
+auc = performance(predObj,"auc"); 
+auc = as.numeric(auc@y.values)
+
+gini = ineq(trainDS$prob1, type="Gini")
+
+```
+
+Finally, we use the Concordance function in the InformationValue package to find the concordance and discordcance ratios:
+```{r}
+#install.packages('InformationValue)
+library(InformationValue)
+Concordance(actuals=trainDS$Target, predictedScores=trainDS$prob1)
+```
+```
+
+
+
+```{r}
+##Performing chisq test to test the categorical variables having effect on the dependent variable
+tab1=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Type)
+chisq.test(tab1)
+tab2=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Delivery.Status)
+chisq.test(tab2)
+tab3=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Category.Id)
+chisq.test(tab3)
+tab4=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.City)
+chisq.test(tab4)
+tab5=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.Id)
+chisq.test(tab5)
+tab6=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.Segment)
+chisq.test(tab6)
+tab7=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.State)
+chisq.test(tab7)
+tab8=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.Street)
+chisq.test(tab8)
+tab9=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.Zipcode)
+chisq.test(tab9)
+tab10=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Department.Id)
+chisq.test(tab10)
+tab11=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Market)
+chisq.test(tab11)
+tab12=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.City)
+chisq.test(tab12)
+tab13=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.Country)
+chisq.test(tab13)
+
+tab14=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.Id)
+chisq.test(tab14)
+tab15=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.Item.Id)
+chisq.test(tab15)
+tab16=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.Region)
+chisq.test(tab16)
+tab17=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.State)
+chisq.test(tab17)
+tab18=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Order.Status)
+chisq.test(tab18)
+tab19=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Product.Name)
+chisq.test(tab19)
+tab20=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Shipping.Mode)
+chisq.test(tab20)
+tab21=table(mydata_1_factor$Late_delivery_risk,mydata_1_factor$Customer.Country)
+chisq.test(tab21)
+str(mydata_1_factor.RF)
+str(mydata_1_num)
+```
+##Random Forest
+
+```{r}
+set.seed(1000)
+##Splitting the dataset
+str(mydata_1_factor)
+mydata_1_factor.RF=mydata_1_factor[,-c(2,5,7,10,11,14,15,16,17,19,21)]
+mydata_RF=cbind(mydata_1_factor.RF,mydata_1_num)
+mydata_RF_TRAIN_INDEX=sample(1:nrow(mydata_RF),0.7*nrow(mydata_RF))
+mydata_RF.train=mydata_RF[mydata_RF_TRAIN_INDEX,]
+mydata_RF.test=mydata_RF[-mydata_RF_TRAIN_INDEX,]
+dim(mydata_RF.train)
+dim(mydata_RF.test)
+```
+
+```{r}
+install.packages("randomForest")
+library(randomForest)
+```
+
+```{r}
+seed=1000
+set.seed(seed)
+## Building the RF model
+## ntree: no. of trees to grow
+## mtry: no of variables to be considered for split
+## nodesize: minimum size (no. of records) of terminal nodes
+## callibrating the importance of variables
+mtry=floor(sqrt(ncol(mydata_RF.train)))
+mtry
+Rforest=randomForest(mydata_RF.train$Late_delivery_risk~.,data=mydata_RF.train, ntree=25, mtry=5, nodesize=10, importance=T)
+print(Rforest)
+```
+
+```{r}
+Rforest$err.rate
+plot(Rforest2, main="Error Rates Random Forest")
+
+legend("topright", c("OOB","0","1"), text.col=1:6, lty=1:3, col=1:3)
+```
+
+```{r}
+RF.imp2=importance(Rforest2)
+RF
+write.csv(RF.imp,"Variable importance RF2.csv")
+```
+ ##Larger the mean decrease value the more imp the variable. 
+```{r}
+##Now we will tune our random forest model by optimising the no of m
+set.seed(1000)
+tRforest=tuneRF(x=mydata_RF.train[,-c(1)], y=mydata_RF.train$Late_delivery_risk, ntreeTry = 25, mtryStart =4, stepFactor = 1.5, improve=0.0001, nodesize=10, trace=T, plot=T, doBest = T, importance=T)
+
+```
+ 
+```{r}
+##Finally building the model
+Rforest2=randomForest(mydata_RF.train$Late_delivery_risk~.,data=mydata_RF.train, ntree=55, mtry=5, nodesize=10, importance=T)
+
+Rforest1=randomForest(mydata_RF.train$Late_delivery_risk~.,data=mydata_RF.train, ntree=35, mtry=5, nodesize=10, importance=T)
+##using this model to do the prediction on train as well as test dataset
+mydata_RF.train$RF.pred=predict(Rforest1, data=mydata_RF.train, type="class")
+RF.score.train=predict(Rforest1,data=mydata_RF.train, type="prob")[,"1"]
+print(mydata_RF.train)
+```
+ 
+```{r}
+##Predicting on test model
+mydata_RF.test$RF.pred=predict(Rforest1,mydata_RF.test, type="class")
+Rf.score.test=predict(Rforest1, mydata_RF.test, type="prob")[,"1"]
+```
+
+```{r}
+##RF model confusion matrix
+RF_table_train=table(mydata_RF.train$Late_delivery_risk, mydata_RF.train$RF.pred)
+RF_CM_train=confusionMatrix(RF_table_train)
+RF_CM_train
+```
+
+```{r}
+RF_table_test=table(mydata_RF.test$Late_delivery_risk,mydata_RF.test$RF.pred)
+RF_CM_test=confusionMatrix(RF_table_test)
+RF_CM_test
+```
+
+```{r}
+##Error rate
+(RF_table_train[1,2]+RF_table_train[2,1])/nrow(mydata_RF.train)
+```
+##XGBoosting
+
+```{r}
+##XGBoosting
+##Taking into account the scores data for XGBoosting since it works with matrices that contain all numeric variables
+##We also need to split the data further
+mydata_XG=mydata_glm
+
+
+
+mydata_XG_train=mydata_logit_train[,-12]
+mydata_XG_train$Late.Delivery=as.integer (mydata_XG_train$Late.Delivery)
+mydata_XG_test$Late.Delivery=as.integer(mydata_XG_test$Late.Delivery)
+mydata_XG_test=mydata_logit_test[,-12]
+mydata_XG_train=as.data.frame(mydata_XG_train)
+mydata_XG_train$Product.Category=as.integer(mydata_XG_train$Product.Category)
+mydata_XG_train$Destination.location=as.integer(mydata_XG_train$Destination.location)
+mydata_XG_train$D3=as.integer(mydata_XG_train$D3)
+mydata_XG_train$Market=as.integer(mydata_XG_train$Market)
+mydata_XG_train$Status=as.integer(mydata_XG_train$Status)
+mydata_XG_train$Lead.time=as.integer(mydata_XG_train$Lead.time)
+mydata_XG_train$Sales.data=as.integer(mydata_XG_train$Sales.data)
+mydata_XG_train$Discount=as.integer(mydata_XG_train$Discount)
+mydata_XG_train$Location.destination=as.integer(mydata_XG_train$Location.destination)
+mydata_XG_train$Benefits=as.integer(mydata_XG_train$Benefits)
+mydata_XG_train=as.data.frame(mydata_XG_train)
+mydata_XGfeatures=mydata_XG_train[,c(2:11)]
+dim(mydata_XG_train)
+dim(mydata_logit_test)
+mydata_XGlabel=as.matrix(mydata_XG_train[,1])
+mydata_XGfeatures.test=as.data.frame.matrix(mydata_XG_test[,2:11])
+
+xgb_fit.reg=xgboost(data=mydata_XGfeatures, label=mydata_XGlabel, eta=0.001, max_depth=3, min_child_weight=3, nrounds=10000, nfold=5, Objective="binary:logistic", verbose=0, early_stopping_rounds=10)
+str(mydata_XG_train)
+##eta is shrinkage in the previous algorithm
+###Larger the depth, more complex the model; higher chances of overfitting. There is no standard value for max_depth. Larger data sets require deep trees to learn the rules from data.
+##Min child weight blocks the potential feature interactions to prevent overfitting
+##nrounds controls the maximum no of iterations. for classification it is similar to th no of trees to grow.
+##binary logistic is for regression model
+##verbose is silent
+##early shopping rounds is to stop if no improvement for 10 consecutive trees
+```
+
+
+
+```{r}
+##Error rate
+(RF_table_train1[1,2]+RF_table_train1[2,1])/nrow(mydata_RF_train1)
+```
+
+
+```{r}
+library(ROCR)
+install.packages("pROC")
+library(pROC)
+rf_Votes=Rforest2$votes[,2]
+rf.roc=roc(mydata_RF_train1$Late_delivery_risk,rf_Votes)
+plot(rf.roc)
+auc.rf=auc(rf.roc)
+
+library(ROCR)
+# 2. True Positive and Negative Rate
+# 3. Plot the ROC curve
+install.packages("precrec")
+library(precrec)
+precrec_obj2 <- evalmod(scores = mydata_RF_train1$RF.pred, labels = mydata_RF_train1$Late_delivery_risk, mode="basic")
+autoplot(precrec_obj2)   
+KS = max(perf_RF@y.values[[1]]-perf_RF@x.values[[1]])
+KS
+auc
+gini = ineq(mydata_CART1_train$CART.score, type="Gini")
+
+```
+
+
+
+##XGBoosting
+
+```{r}
+##XGBoosting
+##Taking into account the scores data for XGBoosting since it works with matrices that contain all numeric variables
+##We also need to split the data further
+mydata_XG=mydata_glm
+mydata_XG_train=mydata_logit_train[,-12]
+mydata_XG_train$Late.Delivery=as.integer (mydata_XG_train$Late.Delivery)
+mydata_XG_test$Late.Delivery=as.integer(mydata_XG_test$Late.Delivery)
+mydata_XG_test=mydata_logit_test[,-12]
+mydata_XG_train=as.data.frame(mydata_XG_train)
+mydata_XG_train$Product.Category=as.integer(mydata_XG_train$Product.Category)
+mydata_XG_train$Destination.location=as.integer(mydata_XG_train$Destination.location)
+mydata_XG_train$D3=as.integer(mydata_XG_train$D3)
+mydata_XG_train$Market=as.integer(mydata_XG_train$Market)
+mydata_XG_train$Status=as.integer(mydata_XG_train$Status)
+mydata_XG_train$Lead.time=as.integer(mydata_XG_train$Lead.time)
+mydata_XG_train$Sales.data=as.integer(mydata_XG_train$Sales.data)
+mydata_XG_train$Discount=as.integer(mydata_XG_train$Discount)
+mydata_XG_train$Location.destination=as.integer(mydata_XG_train$Location.destination)
+mydata_XG_train$Benefits=as.integer(mydata_XG_train$Benefits)
+mydata_XG_train=as.data.frame(mydata_XG_train)
+mydata_XGfeatures=mydata_XG_train[,c(2:11)]
+dim(mydata_XG_train)
+dim(mydata_logit_test)
+mydata_XGlabel=as.matrix(mydata_XG_train[,1])
+mydata_XGfeatures.test=as.data.frame.matrix(mydata_XG_test[,2:11])
+
+xgb_fit.reg=xgboost(data=mydata_XGfeatures, label=mydata_XGlabel, eta=0.001, max_depth=3, min_child_weight=3, nrounds=10000, nfold=5, Objective="binary:logistic", verbose=0, early_stopping_rounds=10)
+str(mydata_XG_train)
+##eta is shrinkage in the previous algorithm
+###Larger the depth, more complex the model; higher chances of overfitting. There is no standard value for max_depth. Larger data sets require deep trees to learn the rules from data.
+##Min child weight blocks the potential feature interactions to prevent overfitting
+##nrounds controls the maximum no of iterations. for classification it is similar to th no of trees to grow.
+##binary logistic is for regression model
+##verbose is silent
+##early shopping rounds is to stop if no improvement for 10 consecutive trees
+```
+
+# we also need to split the training data and label
+
+gd_features_train<-as.matrix(gd_train[,c(1:30])
+gd_label_train<-as.matrix(gd_train[,31])
+gd_features_test<-as.matrix(gd_test[,1:30])
+
+xgb.fit <- xgboost(
+  data = gd_features_train,
+  label = gd_label_train,
+  eta = 0.001,#this is like shrinkage in the previous algorithm
+  max_depth = 3,#Larger the depth, more complex the model; higher chances of overfitting. There is no standard                      value for max_depth. Larger data sets require deep trees to learn the rules from data.
+  min_child_weight = 3,#it blocks the potential feature interactions to prevent overfitting
+  nrounds = 10000,#controls the maximum number of iterations. For classification, it is similar to the number of                       trees to grow.
+  nfold = 5,
+  objective = "binary:logistic",  # for regression models
+  verbose = 0,               # silent,
+  early_stopping_rounds = 10 # stop if no improvement for 10 consecutive trees
+)
+
+#gd_features_test<-as.matrix(gd_features_test[,1:ncol(gd_features_test)-1])
+
+gd_test$xgb.pred.class <- predict(xgb.fit, gd_features_test)
+
+table(gd_test$Class,gd_test$xgb.pred.class>0.5)
+#this model was definitely better
+#or simply the total correct of the minority class
+sum(gd_test$Class==1 & gd_test$xgb.pred.class>=0.5)
+```
+
+
